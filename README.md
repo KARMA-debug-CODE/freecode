@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FreeCode
 
-## Getting Started
+A free, self-hosted coding practice platform: a problem list, an in-browser editor, and an instant judge, plus a daily problem and streak tracking.
 
-First, run the development server:
+Everything runs **in your browser**:
+
+- **JavaScript** runs in a Web Worker.
+- **Python 3** runs in a Web Worker via [Pyodide](https://pyodide.org) (CPython compiled to WebAssembly, loaded from a CDN the first time you use it).
+- Progress, submissions, and your code drafts are saved in `localStorage`. There is no backend and no account.
+
+All problem statements, tests, and reference solutions in this repo were written for this project.
+
+## Features
+
+- 30 problems (Easy / Medium / Hard) with search plus difficulty, tag, and status filters
+- Monaco editor (the VS Code editor) with Python and JavaScript support
+- **Run** checks only the sample tests. **Submit** runs every test, including the hidden ones.
+- Results show Accepted / Wrong Answer / Runtime Error / Time Limit Exceeded, with output, expected value, and captured stdout
+- Hints, a reference solution you have to reveal on purpose, and a per-problem submission history
+- Problem of the Day, a daily streak, and a 20-week activity heatmap
+- Keyboard shortcuts: `Ctrl+Enter` runs, `Ctrl+Shift+Enter` submits
+
+## Run it locally (Ubuntu / WSL)
+
+Requires Node.js 20+ (for example via [nvm](https://github.com/nvm-sh/nvm): `nvm install 22`).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Production build:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build && npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Adding a problem
 
-## Learn More
+Problems live in `src/lib/problems/{easy,medium,hard}.ts`. Each one has:
 
-To learn more about Next.js, take a look at the following resources:
+- `entry`: the function name for each language. Python code uses `class Solution` with that method.
+- `starter` / `solution`: code for each language
+- `tests`: `{ args: [...], expected }`. The first `sampleCount` tests are shown to the user and used by **Run**.
+- `compare` (optional): `"exact"` (the default), `"unordered"`, or `"nested-unordered"`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then check that every reference solution passes every test in both languages:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run verify
+```
 
-## Deploy on Vercel
+## Project layout
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+public/runners/     Web Worker runners (js-runner.js, py-runner.js, compare.js)
+scripts/verify.ts   Checks every reference solution against its tests
+src/app/            Pages: list (/), problem (/problems/[slug]), /daily, /progress
+src/components/     UI components (Workspace = editor + judge)
+src/lib/            Problems, runner client, progress store
+```
