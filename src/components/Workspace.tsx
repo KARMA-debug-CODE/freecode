@@ -132,7 +132,7 @@ export default function Workspace({ problem, prevSlug, nextSlug }: { problem: Pr
   const waitingForPython = lang === "python" && !pyReady;
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row min-h-0 h-[calc(100vh-3rem)] p-2 gap-0">
+    <div className="flex-1 flex flex-col lg:flex-row min-h-0 lg:h-[calc(100vh-3rem)] lg:flex-none p-2 gap-0">
       {/* Left panel */}
       <section className="bg-panel rounded-lg border border-line flex flex-col min-h-0 lg:h-full h-[50vh]" style={{ flexBasis: `${leftWidth}%` }}>
         <div className="flex items-center gap-1 px-2 h-10 border-b border-line text-sm shrink-0">
@@ -284,7 +284,7 @@ export default function Workspace({ problem, prevSlug, nextSlug }: { problem: Pr
 
       {/* Right panel */}
       <section className="flex-1 flex flex-col gap-2 min-h-0 min-w-0 mt-2 lg:mt-0">
-        <div className="bg-panel rounded-lg border border-line flex flex-col min-h-0 flex-[3]">
+        <div className="bg-panel rounded-lg border border-line flex flex-col min-h-0 h-[60vh] lg:h-auto lg:flex-[3]">
           <div className="flex items-center gap-2 px-2 h-10 border-b border-line shrink-0">
             <select
               aria-label="Language"
@@ -334,7 +334,7 @@ export default function Workspace({ problem, prevSlug, nextSlug }: { problem: Pr
           </div>
         </div>
 
-        <div className="bg-panel rounded-lg border border-line flex flex-col min-h-0 flex-[2]">
+        <div className="bg-panel rounded-lg border border-line flex flex-col min-h-0 h-[45vh] lg:h-auto lg:flex-[2]">
           <div className="flex items-center gap-1 px-2 h-10 border-b border-line text-sm shrink-0">
             {(["testcase", "result"] as BottomTab[]).map((t) => (
               <button
@@ -381,7 +381,7 @@ function Field({ label, value, tone }: { label: string; value: string; tone?: "o
   return (
     <div className="mb-3">
       <div className="text-xs text-muted mb-1">{label}</div>
-      <pre className={`bg-panel-2 rounded-md px-3 py-2 font-mono text-[13px] whitespace-pre-wrap break-all ${tone === "bad" ? "text-hard" : tone === "ok" ? "text-easy" : ""}`}>{value}</pre>
+      <pre className={`bg-panel-2 rounded-md px-3 py-2 font-mono text-[13px] whitespace-pre-wrap break-all max-h-60 overflow-auto ${tone === "bad" ? "text-hard" : tone === "ok" ? "text-easy" : ""}`}>{value}</pre>
     </div>
   );
 }

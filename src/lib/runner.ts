@@ -19,6 +19,10 @@ const TIME_LIMIT_MS: Record<Language, number> = { javascript: 4000, python: 8000
 const workers: Partial<Record<Language, Worker>> = {};
 const pyStatus = { ready: false, listeners: new Set<(ready: boolean) => void>() };
 
+function clip(s: string, max = 10_000): string {
+  return s.length > max ? s.slice(0, max) + "\n… (" + (s.length - max) + " more characters truncated)" : s;
+}
+
 function createWorker(lang: Language): Worker {
   const w = new Worker(lang === "python" ? "/runners/py-runner.js" : "/runners/js-runner.js");
   if (lang === "python") {
@@ -72,11 +76,18 @@ export function runCode(
       if (msg.type === "done") {
         clearTimeout(timer);
         worker.removeEventListener("message", onMessage);
-        resolve({ kind: "results", results: msg.results });
+        resolve({
+          kind: "results",
+          results: msg.results.map((result: TestResult) => ({
+            ...result,
+            stdout: clip(result.stdout),
+            error: result.error === undefined ? undefined : clip(result.error),
+          })),
+        });
       } else if (msg.type === "error") {
         clearTimeout(timer);
         worker.removeEventListener("message", onMessage);
-        resolve({ kind: "compile-error", error: msg.error });
+        resolve({ kind: "compile-error", error: clip(msg.error) });
       } else if (msg.type === "ready" && lang === "python" && timer === undefined) {
         startTimer();
       }
